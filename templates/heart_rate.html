@@ -1,0 +1,94 @@
+{% extends "layout.html" %}
+
+{% block title %}Live Heart Rate Monitor - HealthSense AI{% endblock %}
+{% block page_title %}Live Heart Rate Monitor (Camera PPG / rPPG){% endblock %}
+{% block page_subtitle %}Remote Photoplethysmography — non-contact heart rate calculation using browser webcam color signal analysis{% endblock %}
+
+{% block content %}
+<div class="ppg-grid">
+  <!-- LEFT PANEL: CAMERA FEED & CONTROLS -->
+  <div class="card">
+    <div class="card-header" style="display: flex; align-items: center; justify-content: space-between;">
+      <div>
+        <h2><i class="fa-solid fa-camera" style="color: var(--accent-cyan);"></i> Optical PPG Camera Stream</h2>
+        <p>Green color channel blood volume pulsation sampling</p>
+      </div>
+
+      <div class="mode-toggle">
+        <button type="button" class="mode-btn active" data-mode="fingertip"><i class="fa-solid fa-fingerprint"></i> Fingertip</button>
+        <button type="button" class="mode-btn" data-mode="face"><i class="fa-solid fa-user"></i> Forehead</button>
+      </div>
+    </div>
+
+    <div class="camera-container">
+      <video id="webcam-video" autoplay playsinline muted></video>
+      <canvas id="hidden-canvas" style="display: none;"></canvas>
+
+      <div id="roi-overlay" class="roi-overlay">
+        <div id="roi-label" class="roi-label">Cover Camera Lens</div>
+      </div>
+    </div>
+
+    <div class="controls-bar">
+      <button id="btn-start-measure" class="btn-submit" style="margin-top: 0;">
+        <i class="fa-solid fa-play"></i> Start 18s Measurement
+      </button>
+
+      <div id="timer-countdown" style="font-size: 13px; font-weight: 700; color: var(--primary);">
+        Ready to capture
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL: WAVEFORM & BPM DISPLAY -->
+  <div class="card" style="display: flex; flex-direction: column;">
+    <div class="card-header">
+      <h2><i class="fa-solid fa-wave-square" style="color: var(--accent-rose);"></i> Live Pulse Waveform & Diagnostics</h2>
+      <p>Real-time green-channel pulse trace & BPM classification</p>
+    </div>
+
+    <div id="heart-placeholder" class="placeholder-state" style="margin: auto;">
+      <div class="icon-stethoscope">
+        <i class="fa-solid fa-heart-pulse"></i>
+      </div>
+      <h3>Awaiting Camera PPG Capture</h3>
+      <p>Click "Start 18s Measurement" to begin streaming your pulse signal.</p>
+    </div>
+
+    <div id="bpm-result-container" style="display: none;">
+      <div class="bpm-result-box">
+        <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; opacity: 0.8; letter-spacing: 0.8px;">
+          Calculated Heart Rate
+        </div>
+        <div id="bpm-value" class="bpm-value-display">74</div>
+        <div style="font-size: 13px; font-weight: 600; color: #94a3b8; margin-bottom: 12px;">Beats Per Minute (BPM)</div>
+        <div id="class-badge" class="class-badge normal">Normal (60-100 BPM)</div>
+      </div>
+    </div>
+
+    <div class="shap-chart-card" style="margin-top: auto;">
+      <div class="shap-chart-header">
+        <span><i class="fa-solid fa-chart-line" style="color: var(--accent-cyan);"></i> Optical PPG Waveform Trace</span>
+        <span style="font-size: 11px; color: var(--text-muted); font-weight: 500;">Live 30 FPS</span>
+      </div>
+      <div class="shap-chart-wrapper" style="height: 180px;">
+        <canvas id="pulseChartCanvas"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- INSTRUCTIONAL NOTE -->
+<div class="instruction-note">
+  <i class="fa-solid fa-circle-info" style="font-size: 20px; color: var(--primary); margin-top: 2px;"></i>
+  <div>
+    <strong>Instructions for optimal accuracy:</strong><br>
+    Sit completely still under clear ambient lighting. In <strong>Fingertip mode</strong>, gently rest your index finger over your computer camera lens without pressing too hard. In <strong>Forehead mode</strong>, keep your face steady in front of the lens for the full 18 seconds.
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/heart_rate.js') }}"></script>
+{% block end_script %}{% endblock %}
+{% endblock %}

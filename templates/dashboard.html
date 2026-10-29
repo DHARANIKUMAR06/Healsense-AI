@@ -1,0 +1,83 @@
+{% extends "layout.html" %}
+
+{% block title %}Dashboard Overview - HealthSense AI{% endblock %}
+{% block page_title %}Dashboard Overview{% endblock %}
+{% block page_subtitle %}Summary of all disease risk assessments & clinical activity analytics{% endblock %}
+
+{% block content %}
+<!-- EMPTY DASHBOARD STATE (if no records exist yet) -->
+<div id="dash-empty-state" class="empty-dashboard-state" style="display: none;">
+  <div class="icon-stethoscope" style="margin: 0 auto 16px;">
+    <i class="fa-solid fa-chart-line"></i>
+  </div>
+  <h2 style="font-family: var(--font-heading); font-size: 22px; color: var(--text-primary);">No Assessments Performed Yet</h2>
+  <p style="color: var(--text-secondary); max-width: 420px; margin: 8px auto 24px;">Run a clinical prediction from any module to automatically generate analytical insights and visual charts here.</p>
+  <a href="{{ url_for('diabetes_risk') }}" class="btn-submit" style="display: inline-flex; width: auto; padding: 12px 24px;">
+    <i class="fa-solid fa-play"></i> Start First Assessment
+  </a>
+</div>
+
+<!-- FULL DASHBOARD CONTENT -->
+<div id="dash-full-content">
+  <!-- ROW 1: SUMMARY CARDS (5) -->
+  <div id="summary-cards-container" class="dash-cards-grid">
+    <!-- Populated dynamically via JS -->
+  </div>
+
+  <!-- ROW 2: CHARTS GRID (3) -->
+  <div class="dash-charts-grid">
+    <!-- 1. BAR CHART: ASSESSMENTS BY DISEASE TYPE -->
+    <div class="dash-chart-card">
+      <h3><i class="fa-solid fa-chart-simple" style="color: var(--primary);"></i> Assessments by Module</h3>
+      <div class="chart-box">
+        <canvas id="barChartCanvas"></canvas>
+      </div>
+    </div>
+
+    <!-- 2. DONUT CHART: OVERALL RISK DISTRIBUTION -->
+    <div class="dash-chart-card">
+      <h3><i class="fa-solid fa-chart-pie" style="color: var(--accent-rose);"></i> Overall Risk Distribution</h3>
+      <div class="chart-box">
+        <canvas id="donutChartCanvas"></canvas>
+      </div>
+    </div>
+
+    <!-- 3. LINE CHART: ASSESSMENTS OVER TIME -->
+    <div class="dash-chart-card">
+      <h3><i class="fa-solid fa-chart-line" style="color: var(--accent-emerald);"></i> Assessments Over Time</h3>
+      <div class="chart-box">
+        <canvas id="lineChartCanvas"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 3: RECENT ACTIVITY TABLE -->
+  <div class="table-card">
+    <div class="table-header-box">
+      <h3><i class="fa-solid fa-clock-rotate-left" style="color: var(--accent-cyan);"></i> Recent Patient Risk Assessments</h3>
+      <span style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Auto-refreshes every 30s</span>
+    </div>
+
+    <div style="overflow-x: auto;">
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th>Timestamp</th>
+            <th>Disease Module</th>
+            <th>Result</th>
+            <th>Risk Percentage</th>
+          </tr>
+        </thead>
+        <tbody id="recent-table-body">
+          <!-- Populated dynamically via JS -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% block end_script %}{% endblock %}
+{% endblock %}

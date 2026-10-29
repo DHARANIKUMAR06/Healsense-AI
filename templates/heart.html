@@ -1,0 +1,153 @@
+{% extends "layout.html" %}
+
+{% block title %}Heart Disease Risk Assessment - HealthSense AI{% endblock %}
+{% block page_title %}Heart Disease Risk Assessment{% endblock %}
+{% block page_subtitle %}Predict cardiovascular disease risk using UCI patient metrics and SHAP explainability{% endblock %}
+
+{% block content %}
+<div class="assessment-grid">
+  <!-- LEFT FORM CARD -->
+  <div class="card">
+    <div class="card-header">
+      <h2><i class="fa-solid fa-heart-pulse" style="color: var(--accent-rose);"></i> Clinical Metrics Input</h2>
+      <p>Provide exact clinical values from patient reports.</p>
+    </div>
+
+    <form id="assessment-form" action="{{ url_for('heart_risk') }}" method="POST">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="age">Age <span class="unit-tag">(years)</span></label>
+          <input type="number" id="age" name="age" class="form-control" min="18" max="100" value="63" required>
+        </div>
+
+        <div class="form-group">
+          <label for="sex">Sex</label>
+          <select id="sex" name="sex" class="form-control" required>
+            <option value="1" selected>Male (1)</option>
+            <option value="0">Female (0)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="cp">Chest Pain Type</label>
+          <select id="cp" name="cp" class="form-control" required>
+            <option value="0">0: Typical Angina</option>
+            <option value="1">1: Atypical Angina</option>
+            <option value="2">2: Non-anginal Pain</option>
+            <option value="3" selected>3: Asymptomatic</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="trestbps">Resting Blood Pressure <span class="unit-tag">(mmHg)</span></label>
+          <input type="number" id="trestbps" name="trestbps" class="form-control" min="80" max="220" value="145" required>
+        </div>
+
+        <div class="form-group">
+          <label for="chol">Serum Cholesterol <span class="unit-tag">(mg/dL)</span></label>
+          <input type="number" id="chol" name="chol" class="form-control" min="100" max="600" value="233" required>
+        </div>
+
+        <div class="form-group">
+          <label for="fbs">Fasting Blood Sugar > 120 mg/dL</label>
+          <select id="fbs" name="fbs" class="form-control" required>
+            <option value="1" selected>Yes (1)</option>
+            <option value="0">No (0)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="restecg">Resting ECG Results</label>
+          <select id="restecg" name="restecg" class="form-control" required>
+            <option value="0" selected>0: Normal</option>
+            <option value="1">1: ST-T Wave Abnormality</option>
+            <option value="2">2: Left Ventricular Hypertrophy</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="thalach">Max Heart Rate Achieved <span class="unit-tag">(BPM)</span></label>
+          <input type="number" id="thalach" name="thalach" class="form-control" min="60" max="220" value="150" required>
+        </div>
+
+        <div class="form-group">
+          <label for="exang">Exercise Induced Angina</label>
+          <select id="exang" name="exang" class="form-control" required>
+            <option value="0" selected>No (0)</option>
+            <option value="1">Yes (1)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="oldpeak">ST Depression <span class="unit-tag">(mm)</span></label>
+          <input type="number" id="oldpeak" name="oldpeak" class="form-control" min="0.0" max="10.0" step="0.1" value="2.3" required>
+        </div>
+
+        <div class="form-group">
+          <label for="slope">Peak ST Segment Slope</label>
+          <select id="slope" name="slope" class="form-control" required>
+            <option value="0" selected>0: Upsloping</option>
+            <option value="1">1: Flat</option>
+            <option value="2">2: Downsloping</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="ca">Major Vessels <span class="unit-tag">(0-4)</span></label>
+          <input type="number" id="ca" name="ca" class="form-control" min="0" max="4" value="0" required>
+        </div>
+
+        <div class="form-group full-width">
+          <label for="thal">Thalassemia Type</label>
+          <select id="thal" name="thal" class="form-control" required>
+            <option value="1">1: Normal</option>
+            <option value="2" selected>2: Fixed Defect</option>
+            <option value="3">3: Reversable Defect</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-submit">
+        <span class="btn-text"><i class="fa-solid fa-microchip"></i> Analyze Heart Disease Risk</span>
+        <span class="spinner"></span>
+      </button>
+    </form>
+  </div>
+
+  <!-- RIGHT RESULTS CARD -->
+  <div class="card results-card">
+    <div class="card-header">
+      <h2><i class="fa-solid fa-square-poll-vertical" style="color: var(--accent-cyan);"></i> Assessment Results & SHAP XAI</h2>
+      <p>Model classification result & feature contribution breakdown.</p>
+    </div>
+
+    <div id="placeholder-state" class="placeholder-state">
+      <div class="icon-stethoscope">
+        <i class="fa-solid fa-heart-pulse"></i>
+      </div>
+      <h3>Awaiting Assessment Input</h3>
+      <p>Submit the patient metrics in the form to generate model outputs and explanation charts.</p>
+    </div>
+
+    <div id="result-output-container" class="result-output-container">
+      <div id="result-badge" class="result-header-badge positive">
+        <div class="result-text-box">
+          <h3>Predicted Heart Disease Risk</h3>
+          <div id="result-status-text" class="status-value">Positive Risk</div>
+        </div>
+        <div id="risk-pct-display" class="percentage-badge">84.2%</div>
+      </div>
+
+      <div class="shap-chart-card">
+        <div class="shap-chart-header">
+          <span><i class="fa-solid fa-chart-bar" style="color: var(--primary);"></i> Top Contributing Features (SHAP Values)</span>
+          <span style="font-size: 11px; color: var(--text-muted); font-weight: 500;">Explainable AI</span>
+        </div>
+        <div class="shap-chart-wrapper">
+          <canvas id="shapChartCanvas"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

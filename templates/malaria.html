@@ -1,0 +1,108 @@
+{% extends "layout.html" %}
+
+{% block title %}Malaria Risk Assessment - HealthSense AI{% endblock %}
+{% block page_title %}Malaria Infection Risk Assessment{% endblock %}
+{% block page_subtitle %}Predict Plasmodium parasite infection likelihood from hematology metrics & clinical symptoms{% endblock %}
+
+{% block content %}
+<div class="assessment-grid">
+  <!-- LEFT FORM CARD -->
+  <div class="card">
+    <div class="card-header">
+      <h2><i class="fa-solid fa-mosquito" style="color: var(--accent-amber);"></i> Hematology & Symptom Input</h2>
+      <p>Provide complete blood count (CBC) values & clinical fever observations.</p>
+    </div>
+
+    <form id="assessment-form" action="{{ url_for('malaria_risk') }}" method="POST">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="wbc_count">WBC Count <span class="unit-tag">(/µL)</span></label>
+          <input type="number" id="wbc_count" name="wbc_count" class="form-control" min="1000" max="30000" value="7500" required>
+        </div>
+
+        <div class="form-group">
+          <label for="rbc_count">RBC Count <span class="unit-tag">(M/µL)</span></label>
+          <input type="number" id="rbc_count" name="rbc_count" class="form-control" min="1.0" max="8.0" step="0.1" value="4.2" required>
+        </div>
+
+        <div class="form-group">
+          <label for="platelet_count">Platelet Count <span class="unit-tag">(/µL)</span></label>
+          <input type="number" id="platelet_count" name="platelet_count" class="form-control" min="10000" max="600000" value="85000" required>
+        </div>
+
+        <div class="form-group">
+          <label for="hemoglobin">Hemoglobin <span class="unit-tag">(g/dL)</span></label>
+          <input type="number" id="hemoglobin" name="hemoglobin" class="form-control" min="4.0" max="20.0" step="0.1" value="10.5" required>
+        </div>
+
+        <div class="form-group">
+          <label for="fever_duration">Fever Duration <span class="unit-tag">(days)</span></label>
+          <input type="number" id="fever_duration" name="fever_duration" class="form-control" min="1" max="30" value="5" required>
+        </div>
+
+        <div class="form-group">
+          <label for="body_temperature">Body Temperature <span class="unit-tag">(°F)</span></label>
+          <input type="number" id="body_temperature" name="body_temperature" class="form-control" min="95.0" max="108.0" step="0.1" value="102.4" required>
+        </div>
+
+        <div class="form-group">
+          <label for="chills_rigor">Chills / Rigor Present</label>
+          <select id="chills_rigor" name="chills_rigor" class="form-control" required>
+            <option value="1" selected>Yes (1)</option>
+            <option value="0">No (0)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="spleen_enlargement">Spleen Enlargement (Splenomegaly)</label>
+          <select id="spleen_enlargement" name="spleen_enlargement" class="form-control" required>
+            <option value="1" selected>Yes (1)</option>
+            <option value="0">No (0)</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-submit">
+        <span class="btn-text"><i class="fa-solid fa-microchip"></i> Analyze Malaria Risk</span>
+        <span class="spinner"></span>
+      </button>
+    </form>
+  </div>
+
+  <!-- RIGHT RESULTS CARD -->
+  <div class="card results-card">
+    <div class="card-header">
+      <h2><i class="fa-solid fa-square-poll-vertical" style="color: var(--accent-cyan);"></i> Assessment Results & SHAP XAI</h2>
+      <p>Model binary output (Positive/Negative) + confidence percentage.</p>
+    </div>
+
+    <div id="placeholder-state" class="placeholder-state">
+      <div class="icon-stethoscope">
+        <i class="fa-solid fa-mosquito"></i>
+      </div>
+      <h3>Awaiting Assessment Input</h3>
+      <p>Submit the patient metrics in the form to generate model outputs and explanation charts.</p>
+    </div>
+
+    <div id="result-output-container" class="result-output-container">
+      <div id="result-badge" class="result-header-badge positive">
+        <div class="result-text-box">
+          <h3>Predicted Malaria Risk</h3>
+          <div id="result-status-text" class="status-value">Positive Infection</div>
+        </div>
+        <div id="risk-pct-display" class="percentage-badge">89.1%</div>
+      </div>
+
+      <div class="shap-chart-card">
+        <div class="shap-chart-header">
+          <span><i class="fa-solid fa-chart-bar" style="color: var(--primary);"></i> Top Contributing Features (SHAP Values)</span>
+          <span style="font-size: 11px; color: var(--text-muted); font-weight: 500;">Explainable AI</span>
+        </div>
+        <div class="shap-chart-wrapper">
+          <canvas id="shapChartCanvas"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

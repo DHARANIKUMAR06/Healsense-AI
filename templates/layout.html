@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}HealthSense AI - Disease Detection System{% endblock %}</title>
+
+  <!-- Google Fonts & FontAwesome CDN -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+  <!-- LEFT FIXED SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="brand-container">
+        <div class="brand-icon">
+          <i class="fa-solid fa-heart-pulse"></i>
+        </div>
+        <div>
+          <div class="brand-title">HealthSense AI</div>
+          <div class="brand-subtitle">Disease Detection System</div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Diagnostic Modules</div>
+      
+      <a href="{{ url_for('diabetes_risk') }}" class="nav-item {% if active_page == 'diabetes' %}active{% endif %}">
+        <i class="fa-solid fa-syringe"></i>
+        <span>Diabetes Risk</span>
+      </a>
+
+      <a href="{{ url_for('heart_risk') }}" class="nav-item {% if active_page == 'heart' %}active{% endif %}">
+        <i class="fa-solid fa-heart-crack"></i>
+        <span>Heart Disease</span>
+      </a>
+
+      <a href="{{ url_for('kidney_risk') }}" class="nav-item {% if active_page == 'kidney' %}active{% endif %}">
+        <i class="fa-solid fa-filter"></i>
+        <span>Chronic Kidney</span>
+      </a>
+
+      <a href="{{ url_for('malaria_risk') }}" class="nav-item {% if active_page == 'malaria' %}active{% endif %}">
+        <i class="fa-solid fa-mosquito"></i>
+        <span>Malaria Risk</span>
+      </a>
+
+      <a href="{{ url_for('dengue_risk') }}" class="nav-item {% if active_page == 'dengue' %}active{% endif %}">
+        <i class="fa-solid fa-virus"></i>
+        <span>Dengue Risk</span>
+      </a>
+
+      <div class="nav-section-label" style="margin-top: 16px;">Live PPG & Analytics</div>
+
+      <a href="{{ url_for('heart_rate_monitor') }}" class="nav-item {% if active_page == 'heart_rate' %}active{% endif %}">
+        <i class="fa-solid fa-wave-square"></i>
+        <span>Live Heart Rate</span>
+      </a>
+
+      <a href="{{ url_for('dashboard') }}" class="nav-item {% if active_page == 'dashboard' %}active{% endif %}">
+        <i class="fa-solid fa-chart-line"></i>
+        <span>Dashboard Overview</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="badge-xai">ENSEMBLE ML + SHAP XAI</div>
+      <div class="footer-author">B.E/CSE Project by Dharani</div>
+    </div>
+  </aside>
+
+  <!-- MAIN WRAPPER -->
+  <div class="main-wrapper">
+    <header class="top-header">
+      <div class="header-title-box">
+        <h1>{% block page_title %}Disease Detection System{% endblock %}</h1>
+        <p>{% block page_subtitle %}Machine learning clinical risk analysis & explainability{% endblock %}</p>
+      </div>
+
+      <div class="status-badge">
+        <span class="pulse-dot"></span>
+        <span>Models Loaded & Ready</span>
+      </div>
+    </header>
+
+    <main class="content-body">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/assessment.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>
